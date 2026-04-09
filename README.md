@@ -82,7 +82,7 @@ pip install -r requirements.txt
 > If `requirements.txt` is not available, install the core packages manually:
 
 ```bash
-pip install tensorflow opencv-python streamlit matplotlib numpy
+pip install tensorflow opencv-python matplotlib numpy flask pillow
 ```
 
 ### 3. Download the HAM10000 dataset
@@ -106,10 +106,10 @@ jupyter notebook "skin-cancer-detection-with-cnn-deep-learning.ipynb"
 ### Run the web interface
 
 ```bash
-streamlit run main.py
+python main.py
 ```
 
-Then open the local Streamlit URL shown in the terminal.
+Then open http://127.0.0.1:5000 in your browser.
 
 ---
 
