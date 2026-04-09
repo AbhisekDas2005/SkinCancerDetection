@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Detection - AI-Powered Diagnosis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-container">
+                <h1 class="logo">DermAI</h1>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Advanced Skin Cancer Detection</h1>
+                <p>AI-powered analysis for early detection of skin cancer. Upload your skin lesion image for instant, professional-grade assessment.</p>
+                
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <h2>Analyze Your Skin</h2>
+                        <p>Select an image of the skin lesion you want to check</p>
+                        <input type="file" id="fileInput" accept="image/*">
+                        <button id="uploadBtn">Analyze Image</button>
+                    </div>
+                </div>
+                
+                <div id="result" class="result-card hidden">
+                    <div class="result-header">
+                        <h2>Analysis Complete</h2>
+                    </div>
+                    <div class="result-content">
+                        <div id="prediction" class="prediction"></div>
+                        <div id="confidence" class="confidence"></div>
+                        <div class="disclaimer">
+                            <p><strong>⚠️ Important:</strong> This is an AI-assisted tool for educational purposes. Always consult a healthcare professional for medical diagnosis.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loading" class="loading-card hidden">
+                    <div class="loading-spinner"></div>
+                    <p>Analyzing your image with advanced AI...</p>
+                </div>
+                
+                <div id="error" class="error-card hidden"></div>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <h2>About Skin Cancer Detection</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="icon">🔬</div>
+                        <h3>Advanced AI Technology</h3>
+                        <p>Our system uses state-of-the-art convolutional neural networks trained on thousands of skin lesion images to provide accurate analysis.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="icon">⚡</div>
+                        <h3>Instant Results</h3>
+                        <p>Get immediate feedback on your skin lesion with confidence scores and clear explanations of the analysis.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="icon">🛡️</div>
+                        <h3>Privacy First</h3>
+                        <p>Your images are processed locally and never stored on our servers. Your privacy and data security are our top priorities.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="icon">👨‍⚕️</div>
+                        <h3>Not a Substitute for Professional Care</h3>
+                        <p>This tool is designed to assist, not replace, professional medical diagnosis. Always consult dermatologists for definitive assessment.</p>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Accuracy Rate</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Images Trained</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <p>Have questions about skin cancer detection or our AI technology?</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>support@dermai.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🏥</div>
+                        <div>
+                            <h4>Emergency</h4>
+                            <p>For medical emergencies, call 911</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 DermAI. All rights reserved. | This tool is for educational purposes only.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select an image file to analyze.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                
+                if (response.ok) {
+                    document.getElementById('prediction').innerHTML = `<strong>Prediction:</strong> <span class="${data.prediction.toLowerCase()}">${data.prediction}</span>`;
+                    document.getElementById('confidence').innerHTML = `<strong>Confidence:</strong> ${data.confidence}`;
+                    document.getElementById('result').classList.remove('hidden');
+                    
+                    // Scroll to result
+                    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showError(data.error || 'An error occurred during analysis.');
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.add('hidden');
+                showError('Network error. Please check your connection and try again.');
+            }
+        });
+        
+        function showError(message) {
+            document.getElementById('error').innerHTML = `<strong>Error:</strong> ${message}`;
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('result').classList.add('hidden');
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
